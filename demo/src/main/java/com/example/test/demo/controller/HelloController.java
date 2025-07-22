@@ -14,7 +14,7 @@ public class HelloController {
 
    @GetMapping("/hello")
    public ResponseEntity<String> hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-      logger.info("Received request with name: {}", name);
+      logger.info("Received request with name is : {}", name);
       return ResponseEntity.ok(String.format("Hello, %s!", name));
    }
 }
