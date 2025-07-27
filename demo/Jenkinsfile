@@ -1,48 +1,52 @@
 pipeline {
     agent any
+
+    tools {
+        // This name MUST match the name you configured in
+        // Manage Jenkins -> Tools
+        maven 'Maven3'
+    }
+
     environment {
         // Use the job name and build number to create a unique image tag
         IMAGE_NAME = "my-spring-boot-app"
-        IMAGE_TAG  = "build-${env.BUILD_NUMBER}"
-        APP_NAME   = "spring-boot-app-container"
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                // Checkout the source code from the repository
-                checkout scm
             }
         }
 
-        stage('Build & Test') {
+        stage('Build & Test in Subdirectory') {
             steps {
-                // The 'package' goal will compile, test, and package the application.
-                // If tests fail, the pipeline will stop here.
-                sh 'mvn clean package'
+                // Use the dir step to change into the 'demo' directory
+                dir('demo') {
+                    // The 'mvn' command is now available due to the 'tools' directive.
+                    // This command runs inside the 'demo' directory, where pom.xml is located.
+                    sh 'mvn clean package'
+                }
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker Image in Subdirectory') {
             steps {
-                script {
-                    // Build the Docker image using the Dockerfile in the workspace
-                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}", ".")
+                // The Dockerfile is also in the 'demo' directory
+                dir('demo') {
+                    script {
+                        // The build context ('.') is now the 'demo' directory
+                        docker.build("${IMAGE_NAME}:${IMAGE_TAG}", ".")
+                    }
                 }
             }
         }
 
         stage('Deploy Application') {
             steps {
+                // This stage does not need to change directory, as it only uses the Docker image name
                 script {
-                    // Stop and remove the old container if it exists
+                    // Stop and remove the old container to prevent conflicts
                     sh "docker stop ${APP_NAME} || true"
                     sh "docker rm ${APP_NAME} || true"
 
-                    // Run the new Docker image as a container
-                    sh "docker run -d --name ${APP_NAME} -p 8081:8080 ${IMAGE_NAME}:${IMAGE_TAG}"
-                }
             }
         }
     }
+
 }
+
