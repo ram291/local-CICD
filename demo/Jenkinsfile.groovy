@@ -1,5 +1,12 @@
 pipeline {
     agent any
+
+    tools {
+        // This name MUST match the name you configured in
+        // Manage Jenkins -> Tools
+        maven 'Maven3'
+    }
+
     environment {
         // Use the job name and build number to create a unique image tag
         IMAGE_NAME = "my-spring-boot-app"
@@ -10,7 +17,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the source code from the repository
+                // It's good practice to have an explicit checkout stage
                 checkout scm
             }
         }
@@ -52,5 +59,14 @@ pipeline {
             }
         }
     }
-
+    
+    post {
+        // The post section runs after all stages are complete
+        always {
+            // cleanWs() cleans up the workspace after the build.
+            // This is good practice to save disk space.
+            echo 'Pipeline finished. Cleaning up workspace.'
+            cleanWs()
+        }
+    }
 }
