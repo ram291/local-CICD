@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    environment {
+        // Use the job name and build number to create a unique image tag
+        IMAGE_NAME = "my-spring-boot-app"
+        IMAGE_TAG  = "build-${env.BUILD_NUMBER}"
+        APP_NAME   = "spring-boot-app-container"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code from the repository
+                checkout scm
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                // Use Maven to build the project. The 'sh' step runs a shell command.
+                // The lts-jdk17 image comes with Maven pre-installed.
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image using the Dockerfile in the workspace
+                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}", ".")
+                }
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                script {
+                    // Check if a container with the same name is running and stop/remove it
+                    // '|| true' ensures the command doesn't fail if the container doesn't exist
+                    sh "docker stop ${APP_NAME} || true"
+                    sh "docker rm ${APP_NAME} || true"
+
+                    // Run the new Docker image as a container
+                    sh "docker run -d --name ${APP_NAME} -p 8081:8080 ${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+    }
+}
+
