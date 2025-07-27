@@ -15,10 +15,10 @@ pipeline {
             }
         }
 
-        stage('Build Application') {
+        stage('Build & Test') {
             steps {
-                // Use Maven to build the project. The 'sh' step runs a shell command.
-                // The lts-jdk17 image comes with Maven pre-installed.
+                // The 'package' goal will compile, test, and package the application.
+                // If tests fail, the pipeline will stop here.
                 sh 'mvn clean package'
             }
         }
@@ -35,8 +35,7 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 script {
-                    // Check if a container with the same name is running and stop/remove it
-                    // '|| true' ensures the command doesn't fail if the container doesn't exist
+                    // Stop and remove the old container if it exists
                     sh "docker stop ${APP_NAME} || true"
                     sh "docker rm ${APP_NAME} || true"
 
@@ -47,4 +46,3 @@ pipeline {
         }
     }
 }
-
