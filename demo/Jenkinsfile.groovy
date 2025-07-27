@@ -39,7 +39,7 @@ pipeline {
                 dir('demo') {
                     script {
                         // The build context ('.') is now the 'demo' directory
-                        docker.build("${IMAGE_NAME}:${IMAGE_TAG}", ".")
+                        sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                     }
                 }
             }
