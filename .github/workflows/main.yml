@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build JAR
-        run: mvn clean package -DskipTests
+        run: cd demo && mvn clean package -DskipTests
         working-directory: ${{ github.workspace }}/demo
 
       - name: Log in to the GitHub Container Registry
