@@ -18,9 +18,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build JAR
-        run: cd demo && mvn clean package -DskipTests
+      - name: change directory
+        run: cd demo  mvn clean package -DskipTests
         working-directory: ${{ github.workspace }}/demo
+      - name: build Jar
+        run:  mvn clean package -DskipTests
+        working-directory: ${{ github.workspace }}/demo  
+     
 
       - name: Log in to the GitHub Container Registry
         uses: docker/login-action@v3
