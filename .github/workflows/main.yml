@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
 
       - name: change directory
-        run: cd demo  mvn clean package -DskipTests
+        run: cd demo 
         working-directory: ${{ github.workspace }}/demo
       - name: build Jar
         run:  mvn clean package -DskipTests
