@@ -18,25 +18,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-      - name: Build JAR
+      - name: Build with Maven
         run: mvn clean package
-=======
-=======
->>>>>>> dd015f99e24fc56780f27e172f987e03dc33847f
-      - name: change directory
-        run: cd demo 
-        working-directory: ${{ github.workspace }}/demo
-      - name: build Jar
-        run:  mvn clean package -DskipTests
-        working-directory: ${{ github.workspace }}/demo  
      
-<<<<<<< HEAD
->>>>>>> dd015f99e24fc56780f27e172f987e03dc33847f
-=======
->>>>>>> dd015f99e24fc56780f27e172f987e03dc33847f
-
       - name: Log in to the GitHub Container Registry
         uses: docker/login-action@v3
         with:
